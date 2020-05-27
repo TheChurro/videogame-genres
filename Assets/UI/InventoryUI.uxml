@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="screen" style="flex-grow: 1; justify-content: space-between;">
+        <Style src="GameUI.uss" />
+        <ui:VisualElement name="inventory-panel" style="flex-direction: row; flex-grow: 1;">
+            <ui:VisualElement name="inventory-container" class="ui-container" style="align-items: center; min-width: 30%; flex-direction: column; border-bottom-width: 4px;">
+                <ui:Label text="Inventory" name="inventory-label" class="ui-text" style="flex-grow: 0;" />
+                <ui:ListView focusable="True" name="inventory-list" item-height="60" style="flex-grow: 1; width: 100%; height: 150px;" />
+            </ui:VisualElement>
+            <ui:Label text="This is the preview of the text you will say once you have choice..." name="item-preview" class="ui-text ui-container" style="border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 4px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; flex-grow: 1; flex-direction: column;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

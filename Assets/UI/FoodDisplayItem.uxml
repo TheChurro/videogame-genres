@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="root" style="flex-direction: row; flex-grow: 1;">
+        <Style src="GameUI.uss" />
+        <ui:VisualElement name="image" style="-unity-background-scale-mode: scale-to-fit; width: 100px; height: auto;" />
+        <ui:Label text="Label" name="text" class="ui-text" style="-unity-text-align: middle-center; font-size: 38px;" />
+    </ui:VisualElement>
+</ui:UXML>
