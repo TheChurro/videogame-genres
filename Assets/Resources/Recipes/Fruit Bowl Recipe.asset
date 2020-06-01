@@ -19,5 +19,5 @@ MonoBehaviour:
   - info: {fileID: 11400000, guid: 793081af0edf44b4c83d500c6e24a74c, type: 2}
     amount: 2
   - info: {fileID: 11400000, guid: f38b95671a8584fc89624011e960e31f, type: 2}
-    amount: 5
-  known: 1
+    amount: 4
+  known: 0

@@ -14,6 +14,7 @@ public class DialogueController
 {
     private PanelRenderer DialogueRender;
     private ListController<int> choice_controller;
+    private ListController<RecipeInfo> recipe_controller;
     private VisualElement DialoguePanel;
     private Label NameLabel;
     private VisualElement PortraitImage;
@@ -34,12 +35,25 @@ public class DialogueController
         DialogueRender.enabled = false;
 
         var ChoicePanel = UIRenderer.visualTree.Q<VisualElement>("choice-panel");
+        // var ChoiceContainer = UIRenderer.visualTree.Q<VisualElement>("choice-container");
         var ChoiceList = UIRenderer.visualTree.Q<ListView>("choice-list");
         var ChoiceLabel = UIRenderer.visualTree.Q<Label>("choice-preview");
         this.choice_controller = new ListController<int>(
             ChoicePanel,
+            // ChoiceContainer,
             ChoiceList,
             ChoiceLabel,
+            ListItemTemplate
+        );
+        var RecipePanel = UIRenderer.visualTree.Q<VisualElement>("recipe-panel");
+        // var RecipeContainer = UIRenderer.visualTree.Q<VisualElement>("recipe-container");
+        var RecipeList = UIRenderer.visualTree.Q<ListView>("recipe-list");
+        var RecipeLabel = UIRenderer.visualTree.Q<Label>("recipe-preview");
+        this.recipe_controller = new ListController<RecipeInfo>(
+            RecipePanel,
+            // RecipeContainer,
+            RecipeList,
+            RecipeLabel,
             ListItemTemplate
         );
 
@@ -50,6 +64,7 @@ public class DialogueController
         DialogueLabel = UIRenderer.visualTree.Q<Label>("dialogue");
         
         this.choice_controller.Hide();
+        this.recipe_controller.Hide();
         DialoguePanel.visible = false;
         NameLabel.visible = false;
         PortraitContainer.style.display = DisplayStyle.None;
@@ -64,6 +79,7 @@ public class DialogueController
         PortraitContainer.style.display = DisplayStyle.None;
         NameLabel.visible = false;
         this.choice_controller.Hide();
+        this.recipe_controller.Hide();
 
         // Clear dialogue node state
         dialogue_node = null;
@@ -150,7 +166,7 @@ public class DialogueController
 
     private void ShowRecipes(Inventory inventory) {
         var recipes = RecipeState.available_recipies();
-        var choices = new List<ListController<int>.ListElement>();
+        var choices = new List<ListController<RecipeInfo>.ListElement>();
         for (int i = 0; i < recipes.Count; i++) {
             string requirements_string = "Required:";
             for (int j = 0; j < recipes[i].inputs.Length; j++) {
@@ -159,20 +175,21 @@ public class DialogueController
                 }
                 requirements_string = $"{requirements_string} {recipes[i].inputs[j].amount} {recipes[i].inputs[j].info.name}";
             }
-            choices.Add(new ListController<int>.ListElement(){
+            choices.Add(new ListController<RecipeInfo>.ListElement(){
                 text = recipes[i].output.info.name,
                 choosable = inventory.can_make(recipes[i]),
                 description = requirements_string,
-                image = recipes[i].output.info.image
+                image = recipes[i].output.info.image,
+                value = recipes[i]
             });
         }
-        choices.Add(new ListController<int>.ListElement(){
+        choices.Add(new ListController<RecipeInfo>.ListElement(){
             text = "Cancel",
             choosable = true,
             description = null,
-            value = -1,
+            value = null,
         });
-        this.choice_controller.ShowList(choices);
+        this.recipe_controller.ShowList(choices);
     }
 
     private void ShowDialogue() {
@@ -185,15 +202,25 @@ public class DialogueController
         return (choice_node != null || recipe_node != null);
     }
 
+    private bool is_choice() {
+        return choice_node != null;
+    }
+
+    private bool is_recipe() {
+        return recipe_node != null;
+    }
+
     public bool TrySelect(out InteractionNode node) {
         node = null;
-        if (IsChoice()) {
+        if (is_choice()) {
             if (this.choice_controller.GetConfirmed(out int chosen)) {
-                if (choice_node != null) {
-                    node = choice_node.GetNextNodeForChoice(chosen);
-                } else if (recipe_node != null) {
-                    node = recipe_node.GetNextNodeForChoiceAndMake(inventory, chosen);
-                }
+                node = choice_node.GetNextNodeForChoice(chosen);
+                Hide();
+                return true;
+            }
+        } else if (is_recipe()) {
+            if (this.recipe_controller.GetConfirmed(out var chosen)) {
+                node = recipe_node.GetNextNodeForChoiceAndMake(inventory, chosen);
                 Hide();
                 return true;
             }
@@ -207,17 +234,28 @@ public class DialogueController
     }
 
     public void UpChoice() {
-        this.choice_controller.UpChoice();
+        if (is_choice()) {
+            this.choice_controller.UpChoice();
+        } else if (is_recipe()) {
+            this.recipe_controller.UpChoice();
+        }
     }
     public void DownChoice() {
-        this.choice_controller.DownChoice();
+        if (is_choice()) {
+            this.choice_controller.DownChoice();
+        } else if (is_recipe()) {
+            this.recipe_controller.DownChoice();
+        }
     }
 
     private bool do_confirm;
     public void Confirm() {
-        if (!IsChoice()) {
+        if (is_choice()) {
+            this.choice_controller.Confirm();
+        } else if (is_recipe()) {
+            this.recipe_controller.Confirm();
+        } else {
             do_confirm = true;
         }
-        this.choice_controller.Confirm();
     }
 }

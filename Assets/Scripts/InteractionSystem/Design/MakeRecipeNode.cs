@@ -18,18 +18,17 @@ namespace Interactions.Dialogue
         [Output(list=true, list_type=typeof(RecipeChoice))] public List<RecipeChoice> on_recipe_chosen = new List<RecipeChoice>();
         [Output("default", multiple = false)] public Interaction default_chosen;
         [Output("cancel", multiple = false)] public Interaction cancel;
-        public InteractionNode GetNextNodeForChoiceAndMake(Inventory inventory, int answer) {
-            var recipes = RecipeState.available_recipies();
+        public InteractionNode GetNextNodeForChoiceAndMake(Inventory inventory, RecipeInfo recipe) {
             var port_name = "cancel";
-            if (answer >= 0 && answer < recipes.Count) {
+            if (recipe != null) {
                 port_name = "default";
-                ItemInfo choosen_output = recipes[answer].output.info;
+                ItemInfo choosen_output = recipe.output.info;
                 for (int i = 0; i < on_recipe_chosen.Count; i++) {
                     if (on_recipe_chosen[i].when_making == choosen_output) {
                         port_name = $"on_recipe_chosen[{i}]";
                     }
                 }
-                inventory.make(recipes[answer]);
+                inventory.make(recipe);
             }
             var port = GetPort(port_name);
 			if (port == null) return null;

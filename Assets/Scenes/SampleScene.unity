@@ -2368,10 +2368,10 @@ MonoBehaviour:
           - nodeId: 42ae675e-ddb3-42cb-80e1-15535ae0b4b6
             portName: prev
           m_Type: Interactions.Interaction
-        graphPosition: {x: 595.89, y: -93.00001}
+        graphPosition: {x: 575.1941, y: -91.26615}
         flagInteractions:
           flags: []
-        item: {fileID: 11400000, guid: 793081af0edf44b4c83d500c6e24a74c, type: 2}
+        item: {fileID: 11400000, guid: 9c46e7bbac5794e01b083fc8093d8b30, type: 2}
         amount: 1
     00000003:
       type: {class: DialogueNode, ns: Interactions.Dialogue, asm: Assembly-CSharp}
@@ -2639,8 +2639,11 @@ GameObject:
   - component: {fileID: 1565637148}
   - component: {fileID: 1565637147}
   - component: {fileID: 1565637146}
+  - component: {fileID: 1565637150}
+  - component: {fileID: 1565637149}
+  - component: {fileID: 1565637151}
   m_Layer: 0
-  m_Name: New Sprite
+  m_Name: Recipe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2730,12 +2733,134 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1565637145}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.5, y: 14.75, z: -106.40532}
+  m_LocalPosition: {x: 1.89, y: 17.41, z: -106.40532}
   m_LocalScale: {x: 6.33887, y: 6.33887, z: 6.33887}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1565637149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565637145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c0bf73c2902647fca3c0bae7dfe8c03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodes:
+  - id: 0
+  - id: 1
+  - id: 2
+  comments: []
+  variables: []
+  references:
+    version: 1
+    00000000:
+      type: {class: InteractionEntryNode, ns: Interactions, asm: Assembly-CSharp}
+      data:
+        id: 8a6dfb5f-69c1-4a0a-b8c0-0ceab4c6c393
+        name: Entry
+        graph: {fileID: 1565637149}
+        ports:
+        - name: next
+          fieldName: 
+          acceptsMultipleConnections: 0
+          isInput: 0
+          connections:
+          - nodeId: 790b1ec0-57cc-4afa-97d6-a33200ad4b23
+            portName: prev
+          m_Type: Interactions.Interaction
+        graphPosition: {x: 82.10835, y: -107.98419}
+        flagInteractions:
+          flags: []
+        Action: 
+    00000001:
+      type: {class: DialogueNode, ns: Interactions.Dialogue, asm: Assembly-CSharp}
+      data:
+        id: 790b1ec0-57cc-4afa-97d6-a33200ad4b23
+        name: Dialogue
+        graph: {fileID: 1565637149}
+        ports:
+        - name: prev
+          fieldName: prev
+          acceptsMultipleConnections: 1
+          isInput: 1
+          connections:
+          - nodeId: 8a6dfb5f-69c1-4a0a-b8c0-0ceab4c6c393
+            portName: next
+          m_Type: Interactions.Interaction
+        - name: next
+          fieldName: 
+          acceptsMultipleConnections: 0
+          isInput: 0
+          connections:
+          - nodeId: bd530cec-3f22-4f0d-9b8e-2d74fa61b751
+            portName: prev
+          m_Type: Interactions.Interaction
+        graphPosition: {x: 324.7449, y: -95.656876}
+        flagInteractions:
+          flags:
+          - Instruction: 0
+            Domain: 
+            Value: learn:Fruit Bowl
+        Character: {fileID: 11400000, guid: 3fbfa42b8033a4b3f86cf9dc67231521, type: 2}
+        Dialogue: It's a recipe for a fruit bowl.
+    00000002:
+      type: {class: DialogueNode, ns: Interactions.Dialogue, asm: Assembly-CSharp}
+      data:
+        id: bd530cec-3f22-4f0d-9b8e-2d74fa61b751
+        name: Dialogue
+        graph: {fileID: 1565637149}
+        ports:
+        - name: prev
+          fieldName: prev
+          acceptsMultipleConnections: 1
+          isInput: 1
+          connections:
+          - nodeId: 790b1ec0-57cc-4afa-97d6-a33200ad4b23
+            portName: next
+          m_Type: Interactions.Interaction
+        - name: next
+          fieldName: 
+          acceptsMultipleConnections: 0
+          isInput: 0
+          connections: []
+          m_Type: Interactions.Interaction
+        graphPosition: {x: 662.27075, y: -99.46952}
+        flagInteractions:
+          flags: []
+        Character: {fileID: 0}
+        Dialogue: ... It's exactly what I expected.
+--- !u!114 &1565637150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565637145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f13995f84f1b14816b8bd82fd1be58db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  completed_flag: learned:Fruit Bowl
+--- !u!114 &1565637151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565637145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5043c4359cc4d7c49a8d8974a5ee2c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprite_renderer: {fileID: 0}
 --- !u!1 &1569313414
 GameObject:
   m_ObjectHideFlags: 0

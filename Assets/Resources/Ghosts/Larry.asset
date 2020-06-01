@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   portrait: {fileID: 0}
   color: {r: 1, g: 0.8503309, b: 0.74509805, a: 1}
-  flag_requirements: []
+  flag_requirements:
+  - learned:Fruit Bowl
   item_requirement: {fileID: 11400000, guid: 9c46e7bbac5794e01b083fc8093d8b30, type: 2}

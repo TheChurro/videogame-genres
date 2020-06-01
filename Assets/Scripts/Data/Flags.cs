@@ -26,8 +26,10 @@ namespace Data {
             this.change_log = new List<Flag>();
         }
 
-        public void ClearLog() {
+        public List<Flag> pull_change_log() {
+            var log = new List<Flag>(this.change_log);
             this.change_log.Clear();
+            return log;
         }
 
         public bool this[string key]

@@ -83,6 +83,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         flags = new FlagSet();
+        AddFlagChangeHandler(new RecipeState.RecipeStateFlagReciever(flags));
         interactables = new List<Interactable>();
         queue = new List<Interactable>();
         inventory = new Inventory(this);
@@ -91,14 +92,18 @@ public class PlayerController : MonoBehaviour
         if (onFlagChangeHandlers == null) {
             onFlagChangeHandlers = new List<FlagUpdateReciever>();
         }
-        foreach (Flag f in flags.change_log) {
-            foreach (FlagUpdateReciever updater in onFlagChangeHandlers) {
-                if (f.Instruction == FlagInstruction.Set) {
-                    updater.flag_set(f.Value);
-                } else {
-                    updater.flag_unset(f.Value);
+        var changelog = flags.pull_change_log();
+        while (changelog.Count > 0) {
+            foreach (Flag f in changelog) {
+                foreach (FlagUpdateReciever updater in onFlagChangeHandlers) {
+                    if (f.Instruction == FlagInstruction.Set) {
+                        updater.flag_set(f.Value);
+                    } else {
+                        updater.flag_unset(f.Value);
+                    }
                 }
             }
+            changelog = flags.pull_change_log();
         }
     }
 

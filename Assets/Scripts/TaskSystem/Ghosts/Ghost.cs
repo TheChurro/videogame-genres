@@ -80,6 +80,7 @@ namespace Task.Ghost {
 
         void Start() {
             GhostManager.register(this);
+            GhostManager.Instance.player.AddFlagChangeHandler(this);
             this.state = GhostState.Waiting;
             this.home_location = this.transform.position;
         }
@@ -91,6 +92,7 @@ namespace Task.Ghost {
             return position;
         }
 
+        private bool has_item_requirement = false;
         void Update() {
             if (state == GhostState.Following) {
                 this.anger_level += Time.deltaTime * this.following_anger_rate;
@@ -99,7 +101,29 @@ namespace Task.Ghost {
                 this.anger_level += Time.deltaTime * this.angry_anger_rate;
                 try_subdue();
             }
+
             var player = GhostManager.Instance.player;
+
+            // Check to see if we accomplished our goal of getting and item and try to
+            // enter the "Goals Completed" state in response.
+            if (this.guiding_task) {
+                if (this.ghost_info != null && this.ghost_info.item_requirement != null) {
+                    if (GhostManager.Instance.player.inventory[this.ghost_info.item_requirement] > 0) {
+                        if (!has_item_requirement) {
+                            Debug.Log("Got target!");
+                            try_enter_goals_completed();
+                        }
+                        has_item_requirement = true;
+                        return;
+                    } else {
+                        if (has_item_requirement) {
+                            Debug.Log("0 of target!");
+                        }
+                        has_item_requirement = false;
+                    }
+                }
+            }
+
             Vector2 target_offset = Vector2.zero;
             if (this.guiding_task) {
                 var offset = (Vector2)(this.transform.position - player.transform.position);
@@ -264,6 +288,7 @@ namespace Task.Ghost {
                 return false;
             }
             if (requirements == null) {
+                Debug.Log("Requirements were null");
                 requirements = new RequirementTree(this.ghost_info.item_requirement);
             }
             items_to_track = requirements.possibly_needed(GhostManager.Instance.player.inventory, 1);
@@ -299,7 +324,7 @@ namespace Task.Ghost {
         }
 
         public void flag_set(string flag) {
-            if (flag.StartsWith("learned")) {
+            if (flag.StartsWith("learned:")) {
                 // When we learn a new recipe, we might be able to make something
                 // we couldn't before. So, we need to recalculate requirements
                 // next time we try to do tracking.

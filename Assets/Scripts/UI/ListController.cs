@@ -31,6 +31,7 @@ public class ListController<T> {
 
     public ListController(
         VisualElement ListPanel,
+        // VisualElement RecipeContainer,
         ListView ListView,
         Label DescriptionView,
         VisualTreeAsset ListItemTemplate,
@@ -48,11 +49,12 @@ public class ListController<T> {
         if (scrollView != null) {
             scrollView.verticalScroller.style.display = DisplayStyle.None;
         }
-        this.list_view.itemsSource = this.options;
         this.list_view.makeItem = MakeItem;
         this.list_view.bindItem = BindItem;
         this.list_view.onItemChosen += obj => Confirm();
         this.list_view.onSelectionChanged += selection => SelectionChanged();
+        this.list_view.itemsSource = this.options;
+        this.list_panel.style.display = DisplayStyle.None;
     }
 
     private VisualElement MakeItem() {
@@ -79,23 +81,25 @@ public class ListController<T> {
         this.options.AddRange(list);
         this.current_choice = 0;
         if (max_items > 0) {
-            this.list_view.style.height = Mathf.Min(
+            float max_height = Mathf.Min(
                 this.list_view.itemHeight * max_items,
                 this.list_view.itemHeight * this.options.Count
             );
-        }
-        this.list_view.Refresh();
-        if (this.options.Count > 0) {
-            this.list_view.ScrollToItem(current_choice);
-            this.list_view.selectedIndex = 0;
+            this.list_view.style.height = max_height;
         }
         this.confirmed = false;
-        this.list_panel.visible = true;
+        this.list_view.visible = true;
+        this.list_panel.style.display = DisplayStyle.Flex;
+        this.list_view.Refresh();
+        if (this.options.Count > 0) {
+            ScrollAndShowChoice();
+        }
     }
 
     public void Hide() {
         ShowList(new List<ListElement>());
-        this.list_panel.visible = false;
+        this.list_panel.style.display = DisplayStyle.None;
+        this.list_view.visible = false;
         this.description_view.visible = false;
     }
 
