@@ -12,7 +12,7 @@ namespace Interactions.Dialogue
         public FoodInfo when_making;
     }
 
-    [Node("Make Recipe", module = "Food", help = "Show dialogue for making a recipe. Will show all learned recipes. Displays error if you don't have the ingredients.")]
+    [Node("Make Recipe", module = "Items", help = "Show dialogue for making a recipe. Will show all learned recipes. Displays error if you don't have the ingredients.")]
     public class MakeRecipeNode : DialogueNode
     {
         [Output(list=true, list_type=typeof(RecipeChoice))] public List<RecipeChoice> on_recipe_chosen = new List<RecipeChoice>();

@@ -6,5 +6,5 @@ using Data;
 
 public interface Interactable
 {
-    IEnumerator<bool> run_interaction(Inventory inventory, FlagSet flags, UIController controller);
+    IEnumerable<bool> run_interaction(Inventory inventory, FlagSet flags, UIController controller);
 }

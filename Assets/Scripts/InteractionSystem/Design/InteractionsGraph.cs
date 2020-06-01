@@ -120,7 +120,7 @@ namespace Interactions
         public UIController ui_controller;
     }
 
-    [IncludeModules("Interactions", "Food", "Helpers", "Variables", "Gameobject", "Operations/Boolean", "Operations/Animator")]
+    [IncludeModules("Interactions", "Items", "Helpers", "Variables", "Gameobject", "Operations/Boolean", "Operations/Animator")]
     public class InteractionsGraph : Graph
     {
         public InteractionsVariable[] variables;
@@ -174,75 +174,99 @@ namespace Interactions
                 if (context.ui_controller.TrySelect(out var next_node)) {
                     return MoveNext(ref context, next_node);
                 }
-                return false;
-            } else {
-                return MoveNext(ref context, context.interaction_at.GetNextNode());
+            } else if (handle_custom_node_continue(context.interaction_at, context, out var next_node)) {
+                return MoveNext(ref context, next_node);
             }
+            return false;
         }
 
         private bool MoveNext(ref InteractionContext context, InteractionNode node) {
-            if (node == null) {
-                context.complete = true;
-                context.interaction_at = null;
-                return true;
-            }
-            if (!node.FlagsMeetRequirements(context.flags)) {
-                context.complete = true;
-                context.interaction_at = null;
-                return true;
-            }
-            active_context = context;
-            context.interaction_at = node;
-            foreach (var flag in node.flagInteractions.flags) {
-                if (flag.Instruction == FlagInstruction.Set) {
-                    context.flags[flag.Value] = true;
-                } else if (flag.Instruction == FlagInstruction.Unset) {
-                    context.flags[flag.Value] = false;
+            while (true) {
+                if (node == null) {
+                    context.complete = true;
+                    context.interaction_at = null;
+                    return true;
                 }
-            }
-
-            if (node is VarSetNode var_set) {
-                var target = var_set.Target;
-                if (target == null) throw new System.Exception("Trying to set a variable on a null target!");
-                if (target.GetVariable(var_set.var_name, out var var)) {
-                    if (var.var_type != var_set.VarType) {
-                        throw new System.Exception($"Variable {var_set.var_name} exists but is of type {var.var_type} not {var_set.VarType}.");
+                if (!node.FlagsMeetRequirements(context.flags)) {
+                    context.complete = true;
+                    context.interaction_at = null;
+                    return true;
+                }
+                active_context = context;
+                context.interaction_at = node;
+                foreach (var flag in node.flagInteractions.flags) {
+                    if (flag.Instruction == FlagInstruction.Set) {
+                        context.flags[flag.Value] = true;
+                    } else if (flag.Instruction == FlagInstruction.Unset) {
+                        context.flags[flag.Value] = false;
                     }
-                    target.SetVariable(var_set.var_name, var_set.Input);
-                } else {
-                    throw new System.Exception($"Variable {var_set.var_name} does not exist.");
                 }
-            }
-            if (node is SetAnimatorBooleanNode anim_var_set) {
-                var anim = anim_var_set.Animator;
-                if (anim != null)
-                    anim.SetBool(anim_var_set.ParameterName, anim_var_set.Value);
-                else
-                    throw new System.Exception($"Trying to set animation variable {anim_var_set.ParameterName} on null animator!");
-            }
-            if (node is SetGameobjectEnabled game_obj_enabled) {
-                var gameobject = game_obj_enabled.Gameobject;
-                if (gameobject != null) {
-                    gameobject.SetActive(game_obj_enabled.Value);
-                } else {
-                    throw new System.Exception("Trying to set active state on null game object!");
-                }
-            }
-            if (node is DestroyGameobjectNode destroy_node) {
-                var gameobject = destroy_node.Gameobject;
-                if (gameobject != null) {
-                    Destroy(gameobject);
-                } else {
-                    throw new System.Exception("Trying to destroy a null game object!");
-                }
-            }
 
-            if (node is DialogueNode dialogue) {
-                context.ui_controller.ShowNode(dialogue, context.inventory, context.flags);
-                return false;
-            } else {
-                return MoveNext(ref context, context.interaction_at.GetNextNode());
+                if (node is VarSetNode var_set) {
+                    var target = var_set.Target;
+                    if (target == null) throw new System.Exception("Trying to set a variable on a null target!");
+                    if (target.GetVariable(var_set.var_name, out var var)) {
+                        if (var.var_type != var_set.VarType) {
+                            throw new System.Exception($"Variable {var_set.var_name} exists but is of type {var.var_type} not {var_set.VarType}.");
+                        }
+                        target.SetVariable(var_set.var_name, var_set.Input);
+                    } else {
+                        throw new System.Exception($"Variable {var_set.var_name} does not exist.");
+                    }
+                } else if (node is SetAnimatorBooleanNode anim_var_set) {
+                    var anim = anim_var_set.Animator;
+                    if (anim != null)
+                        anim.SetBool(anim_var_set.ParameterName, anim_var_set.Value);
+                    else
+                        throw new System.Exception($"Trying to set animation variable {anim_var_set.ParameterName} on null animator!");
+                } else if (node is SetGameobjectEnabled game_obj_enabled) {
+                    var gameobject = game_obj_enabled.Gameobject;
+                    if (gameobject != null) {
+                        gameobject.SetActive(game_obj_enabled.Value);
+                    } else {
+                        throw new System.Exception("Trying to set active state on null game object!");
+                    }
+                } else if (node is DestroyGameobjectNode destroy_node) {
+                    var gameobject = destroy_node.Gameobject;
+                    if (gameobject != null) {
+                        Destroy(gameobject);
+                    } else {
+                        throw new System.Exception("Trying to destroy a null game object!");
+                    }
+                } else if (node is TakeItemNode take_item_node) {
+                    node = take_item_node.TryTakeItem(context.inventory);
+                    continue;
+                } else if (node is DialogueNode dialogue) {
+                    context.ui_controller.ShowNode(dialogue, context.inventory, context.flags);
+                    return false;
+                } else {
+                    if (handle_custom_node(node, context, out var next_node)) {
+                        node = next_node;
+                        continue;
+                    } else {
+                        return false;
+                    }
+                }
+                node = node.GetNextNode();
             }
+        }
+
+        protected virtual bool handle_custom_node(
+            InteractionNode node,
+            InteractionContext context,
+            out InteractionNode next
+        ) {
+            next = node.GetNextNode();
+            return true;
+        }
+
+        protected virtual bool handle_custom_node_continue(
+            InteractionNode node,
+            InteractionContext context,
+            out InteractionNode next
+        ) {
+            next = node.GetNextNode();
+            return true;
         }
     }
 }

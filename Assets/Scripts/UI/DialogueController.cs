@@ -77,6 +77,7 @@ public class DialogueController
         dialogue_node = node;
         this.inventory = inventory;
         ShowDialogue();
+        this.do_confirm = false;
         if (node is DialogueChoiceNode) {
             choice_node = node as DialogueChoiceNode;
             ShowChoices(flag_set);
@@ -198,6 +199,7 @@ public class DialogueController
             }
         } else if (do_confirm) {
             node = dialogue_node.GetNextNode();
+            do_confirm = false;
             Hide();
             return true;
         }

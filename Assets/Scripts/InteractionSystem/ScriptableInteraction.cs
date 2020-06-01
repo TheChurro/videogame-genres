@@ -14,7 +14,7 @@ namespace Interactions {
                 entry = entries[0];
             }
         }
-        public IEnumerator<bool> run_interaction(Inventory inventory, FlagSet flags, UIController controller) {
+        public IEnumerable<bool> run_interaction(Inventory inventory, FlagSet flags, UIController controller) {
             if (entry == null) yield break;
             if (!this.StartInteraction(entry, inventory, flags, controller, out var iteration)) {
                 yield return true;

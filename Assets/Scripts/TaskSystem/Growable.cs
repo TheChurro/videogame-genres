@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 using Interactions;
@@ -38,7 +39,7 @@ namespace Task {
             }
         }
 
-        public IEnumerator<bool> run_interaction(
+        public IEnumerable<bool> run_interaction(
             Inventory inventory,
             FlagSet flags,
             UIController controller
@@ -50,11 +51,11 @@ namespace Task {
                     to_deactivate.SetActive(false);
                     this.time_until_next_grow = Random.Range(min_growth_time, max_growth_time);
                     inventory.add(resource, 1);
-                    break;
+                    return Enumerable.Empty<bool>();
                 }
             }
             // Hook into non-immediate harvesting. Maybe an animation or something.
-            yield break;
+            return null;
         }
     }
 }

@@ -26,18 +26,23 @@ public class PlayerController : MonoBehaviour
     public UIController UIController;
 
     private Rigidbody2D body;
-    private FlagSet flags;
+    public FlagSet flags;
     private List<Interactable> interactables;
     private IEnumerator<bool> current_interaction;
     public List<FlagUpdateReciever> onFlagChangeHandlers;
     private Vector2 start_pos;
 
     public Inventory inventory;
+    private Collider2D _collider;
+    public Collider2D Collider {
+        get => _collider;
+    }
 
     void Awake() {
         body = this.GetComponent<Rigidbody2D>();
         my_animator = this.GetComponent<Animator>();
-        
+        _collider = this.GetComponent<Collider2D>();
+
         start_pos = this.transform.position;
         interact.started += OnInteract;
         interact.performed += OnEndInteracting;
@@ -104,11 +109,14 @@ public class PlayerController : MonoBehaviour
             if (interactable == null) continue;
             if (interactable is MonoBehaviour b && b.gameObject == null) continue;
             if (current_interaction == null) {
-                current_interaction = interactable.run_interaction(inventory, flags, UIController);
-            } else {
-                QueueInteraction(interactable);
+                var enumerable = interactable.run_interaction(inventory, flags, UIController);
+                if (enumerable != null) {
+                    current_interaction = enumerable.GetEnumerator();
+                }
+                if (current_interaction == null) {
+                    continue;
+                }
             }
-            break;
         }
     }
 
@@ -122,14 +130,6 @@ public class PlayerController : MonoBehaviour
             }
         }
         this.viewing_inventory = !this.viewing_inventory;
-    }
-
-    private class OpenInventory : Interactable {
-        private PlayerController player;
-        public OpenInventory(PlayerController player) { this.player = player; }
-        public IEnumerator<bool> run_interaction(Inventory inventory, FlagSet flags, UIController controller) {
-            return player.display_inventory();
-        }
     }
 
     protected IEnumerator<bool> display_inventory() {
@@ -159,13 +159,14 @@ public class PlayerController : MonoBehaviour
         if (current_interaction != null) {
             if (!current_interaction.MoveNext()) {
                 Debug.Log("Ended Iteration!");
-                if (queue.Count > 0) {
+                current_interaction = null;
+                while (queue.Count > 0 && current_interaction == null) {
                     Debug.Log("Queue is non-empty!");
-                    current_interaction = queue[0].run_interaction(inventory, flags, UIController);
+                    var enumerable = queue[0].run_interaction(inventory, flags, UIController);
+                    if (enumerable != null) {
+                        current_interaction = enumerable.GetEnumerator();
+                    }
                     queue.RemoveAt(0);
-                } else {
-                    Debug.Log("Queue is empty");
-                    current_interaction = null;
                 }
             }
             body.velocity = Vector2.zero;
@@ -179,6 +180,10 @@ public class PlayerController : MonoBehaviour
             float currentSpeed = body.velocity.magnitude;
             if (currentSpeed > speed) {
                 body.velocity *= speed / currentSpeed;
+            }
+            if (follow.Item1 != null) {
+                var follow_offset = (Vector2)(follow.Item1.position - transform.position);
+                body.velocity += follow_offset.normalized * follow.Item2;
             }
 
             if (my_animator != null) {
@@ -197,6 +202,15 @@ public class PlayerController : MonoBehaviour
             }
             toRemoveHandlers = null;
         }
+    }
+
+    private (Transform, float) follow;
+    public void add_follow(Transform transform, float amount) {
+        follow = (transform, amount);
+    }
+
+    public void remove_follow() {
+        follow = (null, 0);
     }
 
     private List<Interactable> queue;

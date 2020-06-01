@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using Data;
+
 namespace Task.Ghost {
     public class GhostManager : MonoBehaviour, FlagUpdateReciever
     {
@@ -24,7 +26,7 @@ namespace Task.Ghost {
 
         public Ghost primary_ghost;
         public List<TrackingGhost> tracking_ghosts;
-        [SerializeField] private float interest_radius;
+        private float interest_radius;
 
         void Awake() {
             g_manager = this;
@@ -57,14 +59,21 @@ namespace Task.Ghost {
             }
         }
 
-        private void set_primary(Ghost ghost) {
+        private bool set_primary(Ghost ghost) {
             if (this.primary_ghost != null) {
                 this.primary_ghost.release_primary();
+                foreach (var tracking_ghost in this.tracking_ghosts) {
+                    tracking_ghost.abandon();
+                }
             }
             this.primary_ghost = ghost;
             if (ghost != null) {
-                ghost.become_primary(this.time_since_last_player_restore);
+                if (ghost.become_primary(this.time_since_last_player_restore)) {
+                    return true;
+                }
+                this.primary_ghost = null;
             }
+            return false;
         }
 
         public bool try_take_primary(Ghost ghost) {
@@ -87,6 +96,21 @@ namespace Task.Ghost {
             this.tracking_ghosts.ForEach(x => x.providers_changed());
         }
 
+        public void abandon_all_trackers(Ghost g) {
+            if (g != this.primary_ghost) return;
+            foreach (var tracking_ghost in this.tracking_ghosts) {
+                tracking_ghost.abandon();
+            }
+        }
+
+        public void satify_ghost(Ghost g) {
+            if (g != this.primary_ghost) return;
+            foreach (var tracker in this.tracking_ghosts) {
+                tracker.satisfy();
+            }
+            set_primary(null);
+        }
+
         void OnTriggerEnter2D(Collider2D collider) {
             var provider = collider.GetComponent<ResourceProvider>();
             if (provider != null) {
@@ -103,11 +127,65 @@ namespace Task.Ghost {
             }
         }
 
+        public void track(Ghost g, Vector3 pos, ItemInfo item) {
+            if (g != primary_ghost) return;
+            // Avoid double tracking!
+            foreach (var tracker in this.tracking_ghosts) {
+                if (tracker == null) continue;
+                if (tracker.track_type == TrackingGhost.TrackingType.TrackResource) {
+                    if (tracker.get_tracked_resource() == item) {
+                        if (tracker.is_abandoned()) {
+                            tracker.recover();
+                        }
+                        return;
+                    }
+                }
+            }
+
+            var go = Instantiate(this.tracking_ghost_prefab, pos, Quaternion.identity);
+            if (!go.TryGetComponent(out TrackingGhost new_tracker)) {
+                Destroy(go);
+                return;
+            }
+            new_tracker.track(this.player, item);
+            this.tracking_ghosts.Add(new_tracker);
+        }
+
+        public void block(Ghost g, Vector3 pos, ItemInfo item) {
+            if (g != primary_ghost) return;
+            // Avoid double blocking!
+            foreach (var tracker in this.tracking_ghosts) {
+                if (tracker == null) continue;
+                if (tracker.track_type == TrackingGhost.TrackingType.Block) {
+                    if (tracker.get_tracked_resource() == item) {
+                        if (tracker.is_abandoned()) {
+                            tracker.recover();
+                        }
+                        return;
+                    }
+                }
+            }
+
+            var go = Instantiate(this.tracking_ghost_prefab, pos, Quaternion.identity);
+            if (!go.TryGetComponent(out TrackingGhost new_tracker)) {
+                Destroy(go);
+                return;
+            }
+            new_tracker.block(this.player, item);
+            this.tracking_ghosts.Add(new_tracker);
+        }
+
         public void flag_set(string flag) {
             if (flag.ToLower().StartsWith("restore")) {
                 this.time_since_last_player_restore = 0;
             }
         }
         public void flag_unset(string flag) {}
+
+        // Debug Drawing
+        public void OnDrawGizmos() {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(this.transform.position, this.interest_radius);
+        }
     }
 }

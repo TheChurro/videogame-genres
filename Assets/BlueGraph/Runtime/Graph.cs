@@ -14,7 +14,7 @@ namespace BlueGraph
         [HideInInspector]
         public List<Comment> comments = new List<Comment>();
 
-        public void Awake()
+        public virtual void Awake()
         {
             Debug.Log("Graph Awake");
         }
