@@ -12,7 +12,7 @@ using Data;
 public class InventoryController
 {
     private PanelRenderer inventory_renderer;
-    private ListController<FoodInfo> inventory_controller;
+    private ListController<ItemInfo> inventory_controller;
     private Inventory inventory;
 
     public InventoryController(PanelRenderer inventory_renderer, VisualTreeAsset item_template) {
@@ -24,7 +24,7 @@ public class InventoryController
         var inventory_panel = this.inventory_renderer.visualTree.Q<VisualElement>("inventory-panel");
         var inventory_list = this.inventory_renderer.visualTree.Q<ListView>("inventory-list");
         var item_preview = this.inventory_renderer.visualTree.Q<Label>("item-preview");
-        this.inventory_controller = new ListController<FoodInfo>(
+        this.inventory_controller = new ListController<ItemInfo>(
             inventory_panel,
             inventory_list,
             item_preview,
@@ -44,9 +44,9 @@ public class InventoryController
         this.inventory_renderer.enabled = true;
         this.inventory = inventory;
 
-        var items = new List<ListController<FoodInfo>.ListElement>();
+        var items = new List<ListController<ItemInfo>.ListElement>();
         foreach (var item in this.inventory.items()) {
-            items.Add(new ListController<FoodInfo>.ListElement(){
+            items.Add(new ListController<ItemInfo>.ListElement(){
                 text = $"{item.Item1.name} ({item.Item2})",
                 image = item.Item1.image,
                 description = item.Item1.description,
@@ -70,7 +70,7 @@ public class InventoryController
         this.inventory_controller.Confirm();
     }
 
-    public bool TrySelect(out FoodInfo info) {
+    public bool TrySelect(out ItemInfo info) {
         info = null;
         if (this.inventory_controller.GetConfirmed(out var return_val)) {
             info = return_val;
@@ -79,11 +79,11 @@ public class InventoryController
         return false;
     }
 
-    public void Remove(FoodInfo info) {
+    public void Remove(ItemInfo info) {
         this.inventory_controller.Remove(info);
     }
 
-    public void UpdateText(FoodInfo info) {
+    public void UpdateText(ItemInfo info) {
         this.inventory_controller.SetText(info, $"{info.name} ({inventory[info]})");
     }
 }

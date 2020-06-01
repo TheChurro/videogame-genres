@@ -23,7 +23,7 @@ namespace Interactions.Dialogue
             var port_name = "cancel";
             if (answer >= 0 && answer < recipes.Count) {
                 port_name = "default";
-                FoodInfo choosen_output = recipes[answer].output.info;
+                ItemInfo choosen_output = recipes[answer].output.info;
                 for (int i = 0; i < on_recipe_chosen.Count; i++) {
                     if (on_recipe_chosen[i].when_making == choosen_output) {
                         port_name = $"on_recipe_chosen[{i}]";

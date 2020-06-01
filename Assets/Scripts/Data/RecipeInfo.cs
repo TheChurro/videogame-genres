@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Data {
-    [CreateAssetMenu(menuName = "Food/Recipe")]
+    [CreateAssetMenu(menuName = "Items/Recipe")]
 	public class RecipeInfo : ScriptableObject {
         public ReicpeRequirement output;
         public ReicpeRequirement[] inputs;
@@ -12,7 +12,7 @@ namespace Data {
 
     [System.Serializable]
     public class ReicpeRequirement {
-        public FoodInfo info;
+        public ItemInfo info;
         public int amount = 1;
     }
 

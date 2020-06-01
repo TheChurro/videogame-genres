@@ -87,7 +87,7 @@ public class UIController : MonoBehaviour
         EnableInputs();
     }
 
-    public bool InventorySelected(out FoodInfo info) {
+    public bool InventorySelected(out ItemInfo info) {
         info = null;
         if (this.inventory_controller.TrySelect(out info)) {
             return true;

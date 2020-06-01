@@ -61,7 +61,7 @@ public class DialogueController
 
         // Hide visible information
         DialoguePanel.visible = false;
-        PortraitContainer.visible = false;
+        PortraitContainer.style.display = DisplayStyle.None;
         NameLabel.visible = false;
         this.choice_controller.Hide();
 
@@ -93,12 +93,13 @@ public class DialogueController
             NameLabel.style.color = dialogue_node.Character.color;
             NameLabel.visible = true;
             if (dialogue_node.Character.portrait != null) {
+                PortraitImage.style.backgroundColor = dialogue_node.Character.color;
                 PortraitImage.style.backgroundImage = new StyleBackground(dialogue_node.Character.portrait);
-                PortraitContainer.visible = true;
+                PortraitContainer.style.display = DisplayStyle.Flex;
             }
             else
             {
-                PortraitContainer.visible = false;
+                PortraitContainer.style.display = DisplayStyle.None;
             }
         }
         else

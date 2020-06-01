@@ -136,7 +136,7 @@ public class PlayerController : MonoBehaviour
         this.UIController.ShowInventory(this.inventory);
         while (this.viewing_inventory) {
             yield return true;
-            if (this.UIController.InventorySelected(out FoodInfo info)) {
+            if (this.UIController.InventorySelected(out ItemInfo info)) {
                 if (this.inventory.try_remove(info, 1, out var new_amount)) {
                     if (new_amount > 0) {
                         this.UIController.InventoryController.UpdateText(info);
