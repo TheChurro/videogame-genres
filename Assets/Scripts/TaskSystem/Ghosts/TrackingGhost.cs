@@ -5,10 +5,11 @@ using UnityEngine;
 using Data;
 
 namespace Task.Ghost {
-    public class TrackingGhost : MonoBehaviour
+    public class TrackingGhost : MonoBehaviour, FlagUpdateReciever
     {
         public const int Uninteractable = 8;
 
+        public float search_ring_radius = 3.5f;
         public float abandon_time = 1.0f;
         public float move_time = 2.0f;
         private Vector2 move_param;
@@ -24,7 +25,7 @@ namespace Task.Ghost {
 
         [SerializeField] private ItemInfo tracked_resource;
         [SerializeField] private int num_resource_in_inventory;
-        [SerializeField] private Goal tracked_goal;
+        [SerializeField] private string tracked_goal;
 
         private bool abandoned;
         private bool satisfied;
@@ -45,6 +46,7 @@ namespace Task.Ghost {
             if (abandoned || satisfied) {
                 this.abandon_time_left -= Time.deltaTime;
                 if (this.abandon_time_left <= 0) {
+                    this.player_track.RemoveFlagChangeHandler(this);
                     Destroy(this.gameObject);
                 }
             } else {
@@ -58,8 +60,8 @@ namespace Task.Ghost {
 
             // Now we do the tracking part.
             ColliderDistance2D dist = new ColliderDistance2D{};
-            foreach (var provider in this.providers) {
-                var new_dist = provider.Item2.Distance(player_track.Collider);
+            foreach (var trackable in this.trackables) {
+                var new_dist = trackable.Distance(player_track.Collider);
                 if (!dist.isValid || new_dist.distance < dist.distance) {
                     dist = new_dist;
                 }
@@ -69,6 +71,16 @@ namespace Task.Ghost {
                 var x_noise = 0.5f - Mathf.PerlinNoise(this.transform.position.x, noise_param);
                 var y_noise = 0.5f - Mathf.PerlinNoise(this.transform.position.y, noise_param);
                 target_pos = new Vector2(x_noise, y_noise) + dist.pointA;
+
+                // If we aren't block, then we should place the tracker pointing in the
+                // direction of the target if we are too far away.
+                if (this.track_type != TrackingType.Block) {
+                    var offset = target_pos - (Vector2) this.player_track.transform.position;
+                    if (offset.magnitude > search_ring_radius) {
+                        target_pos = (Vector2) this.player_track.transform.position + offset.normalized * search_ring_radius;
+                    }
+                }
+
                 this.transform.position = Vector2.SmoothDamp(
                     this.transform.position,
                     target_pos,
@@ -87,28 +99,22 @@ namespace Task.Ghost {
             }
         }
 
-        private List<(ResourceProvider, Collider2D)> providers = new List<(ResourceProvider, Collider2D)>();
+        private List<Collider2D> trackables = new List<Collider2D>();
         public void providers_changed() {
-            if (this.track_type == TrackingType.TrackGoal) return;
-            if (this.track_type == TrackingType.Block) {
-                foreach (var provider in providers) {
-                    if (!GhostManager.Instance.nearby_providers.Contains(provider.Item1)) {
-                        provider.Item1.gameObject.layer = 0;
-                    }
-                }
+            if (this.track_type != TrackingType.Block) return;
+            foreach (var provider in trackables) {
+                provider.gameObject.layer = 0;
             }
-            providers.Clear();
+            trackables.Clear();
             foreach (var provider in GhostManager.Instance.nearby_providers) {
                 if (provider.resource == this.tracked_resource) {
                     var collider = provider.GetComponent<Collider2D>();
                     if (collider == null) continue;
-                    providers.Add((provider, collider));
-                    if (this.track_type == TrackingType.Block) {
-                        provider.gameObject.layer = Uninteractable;
-                    }
+                    trackables.Add(collider);
+                    provider.gameObject.layer = Uninteractable;
                 }
             }
-            if (this.track_type == TrackingType.Block && this.providers.Count == 0) {
+            if (this.trackables.Count == 0) {
                 this.abandon();
             }
         }
@@ -119,7 +125,12 @@ namespace Task.Ghost {
             this.sprite_renderer.color = Color.green;
             this.player_track = player;
             this.num_resource_in_inventory = this.player_track.inventory[item_type];
-            providers_changed();
+            foreach (var provider in ResourceManager.Instance.those_providing(item_type)) {
+                var collider = provider.GetComponent<Collider2D>();
+                if (collider != null) {
+                    this.trackables.Add(collider);
+                }
+            }
         }
 
         public void block(PlayerController player, ItemInfo item_type) {
@@ -130,11 +141,19 @@ namespace Task.Ghost {
             providers_changed();
         }
 
-        public void track(PlayerController player, Goal goal) {
+        public void track(PlayerController player, string flag) {
             this.track_type = TrackingType.TrackGoal;
-            this.tracked_goal = goal;
+            this.tracked_goal = flag;
             this.sprite_renderer.color = Color.yellow;
             this.player_track = player;
+            this.player_track.AddFlagChangeHandler(this);
+            this.trackables.Clear();
+            foreach (var goal in GoalManager.Instance.for_flag(flag)) {
+                var collider = goal.GetComponent<Collider2D>();
+                if (collider != null) {
+                    this.trackables.Add(collider);
+                }
+            }
         }
 
         public bool is_abandoned() {
@@ -144,11 +163,11 @@ namespace Task.Ghost {
         public void abandon() {
             abandoned = true;
             if (this.track_type == TrackingType.Block) {
-                foreach (var provider in providers) {
-                    provider.Item1.gameObject.layer = 0;
+                foreach (var trackable in trackables) {
+                    trackable.gameObject.layer = 0;
                 }
+                trackables.Clear();
             }
-            providers.Clear();
         }
 
         public void recover() {
@@ -168,9 +187,25 @@ namespace Task.Ghost {
             return this.tracked_resource;
         }
 
+        public string get_tracked_flag() {
+            return this.tracked_goal;
+        }
+
         void OnDrawGizmos() {
             Gizmos.color = Color.white;
             Gizmos.DrawWireSphere(target_pos, 0.25f);
+        }
+
+        public void flag_set(string flag) {
+            if (flag == this.tracked_goal) {
+                this.abandon();
+            }
+        }
+
+        public void flag_unset(string flag) {
+            if (!satisfied && flag == this.tracked_goal) {
+                this.recover();
+            }
         }
     }
 }

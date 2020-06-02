@@ -66,6 +66,24 @@ namespace Task.Ghost {
             return min + (max - min) * noise;
         }
 
+        private void register_trackers() {
+            if (this.items_to_track != null) {
+                foreach (var item in this.items_to_track) {
+                    if (item.providers.Count > 0) {
+                        GhostManager.Instance.track(this, this.transform.position, item.base_item);
+                    }
+                }
+            }
+
+            if (this.ghost_info != null) {
+                var player = GhostManager.Instance.player;
+                foreach (var flag in this.ghost_info.flag_requirements) {
+                    if (!player.flags[flag])
+                        GhostManager.Instance.track(this, this.transform.position, flag);
+                }
+            }
+        }
+
         #endregion
 
         #region Unity Events
@@ -229,14 +247,17 @@ namespace Task.Ghost {
                 this.state = GhostState.Following;
                 try_become_angry();
                 GhostManager.Instance.player.remove_follow();
+                register_trackers();
                 return true;
             }
+            
             var flags = GhostManager.Instance.player.flags;
             foreach (var flag in this.ghost_info.flag_requirements) {
                 if (!flags[flag]) {
                     this.state = GhostState.Following;
                     try_become_angry();
                     GhostManager.Instance.player.remove_follow();
+                    register_trackers();
                     return true;
                 }
             }
@@ -261,6 +282,8 @@ namespace Task.Ghost {
             anger_level = time;
             
             if (!try_enter_goals_completed()) {
+                recalculate_tracking_items();
+                register_trackers();
                 if (!try_become_angry()) {
                     providers_changed();
                 }
@@ -296,16 +319,14 @@ namespace Task.Ghost {
         }
 
         public void providers_changed() {
+            if (!this.is_angry()) return;
             if (items_to_track == null) {
                 if (!recalculate_tracking_items()) {
                     return;
                 }
             }
-
             foreach (var provider in GhostManager.Instance.nearby_providers) {
-                if (this.items_to_track.Any(x => x.base_item == provider.resource)) {
-                    GhostManager.Instance.track(this, this.transform.position, provider.resource);
-                } else if (this.is_angry()) {
+                if (!this.items_to_track.Any(x => x.base_item == provider.resource)) {
                     GhostManager.Instance.block(this, this.transform.position, provider.resource);
                 }
             }
@@ -319,7 +340,9 @@ namespace Task.Ghost {
             this.anger_level -= this.progress_subdue_amount;
             if (!try_enter_goals_completed()) {
                 try_subdue();
-                providers_changed();
+                if (recalculate_tracking_items()) {
+                    register_trackers();
+                }
             }
         }
 
@@ -329,6 +352,8 @@ namespace Task.Ghost {
                 // we couldn't before. So, we need to recalculate requirements
                 // next time we try to do tracking.
                 requirements = null;
+                if (recalculate_tracking_items())
+                    register_trackers();
             }
             foreach (var required_flag in this.ghost_info.flag_requirements) {
                 if (required_flag == flag) {

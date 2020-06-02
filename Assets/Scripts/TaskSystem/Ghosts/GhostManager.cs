@@ -132,12 +132,14 @@ namespace Task.Ghost {
             // Avoid double tracking!
             foreach (var tracker in this.tracking_ghosts) {
                 if (tracker == null) continue;
-                if (tracker.track_type == TrackingGhost.TrackingType.TrackResource) {
-                    if (tracker.get_tracked_resource() == item) {
+                if (tracker.get_tracked_resource() == item) {
+                    if (tracker.track_type == TrackingGhost.TrackingType.TrackResource) {
                         if (tracker.is_abandoned()) {
                             tracker.recover();
                         }
                         return;
+                    } else if (tracker.track_type == TrackingGhost.TrackingType.Block) {
+                        tracker.satisfy();
                     }
                 }
             }
@@ -156,8 +158,34 @@ namespace Task.Ghost {
             // Avoid double blocking!
             foreach (var tracker in this.tracking_ghosts) {
                 if (tracker == null) continue;
-                if (tracker.track_type == TrackingGhost.TrackingType.Block) {
-                    if (tracker.get_tracked_resource() == item) {
+                if (tracker.get_tracked_resource() == item) {
+                    if (tracker.track_type == TrackingGhost.TrackingType.Block) {
+                        if (tracker.is_abandoned()) {
+                            tracker.recover();
+                        }
+                        return;
+                    } else if (tracker.track_type == TrackingGhost.TrackingType.TrackResource) {
+                        tracker.satisfy();
+                    }
+                }
+            }
+
+            var go = Instantiate(this.tracking_ghost_prefab, pos, Quaternion.identity);
+            if (!go.TryGetComponent(out TrackingGhost new_tracker)) {
+                Destroy(go);
+                return;
+            }
+            new_tracker.block(this.player, item);
+            this.tracking_ghosts.Add(new_tracker);
+        }
+
+        public void track(Ghost g, Vector3 pos, string goal) {
+            if (g != primary_ghost) return;
+            // Avoid double tracking!
+            foreach (var tracker in this.tracking_ghosts) {
+                if (tracker == null) continue;
+                if (tracker.track_type == TrackingGhost.TrackingType.TrackGoal) {
+                    if (tracker.get_tracked_flag() == goal) {
                         if (tracker.is_abandoned()) {
                             tracker.recover();
                         }
@@ -171,7 +199,7 @@ namespace Task.Ghost {
                 Destroy(go);
                 return;
             }
-            new_tracker.block(this.player, item);
+            new_tracker.track(this.player, goal);
             this.tracking_ghosts.Add(new_tracker);
         }
 
