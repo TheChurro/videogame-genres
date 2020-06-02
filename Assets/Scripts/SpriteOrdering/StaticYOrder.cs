@@ -22,7 +22,9 @@ namespace SOTU {
 
             foreach (Transform child in this.transform) {
                 var parent_y_order = child.GetComponent<ParentYOrder>();
-                parent_y_order.UpdateSortingOrder();
+                if (parent_y_order != null) {
+                    parent_y_order.UpdateSortingOrder();
+                }
             }
         }
     }

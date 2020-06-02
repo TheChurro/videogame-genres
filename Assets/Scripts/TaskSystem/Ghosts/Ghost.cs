@@ -30,14 +30,15 @@ namespace Task.Ghost {
         private float following_anger_rate;
         private float angry_anger_rate;
         private float progress_subdue_amount;
-        [SerializeField] private float angry_at;
-        [SerializeField] private float anger_level;
+        private float angry_at;
+        private float anger_level;
         private Vector2 home_location;
         private Vector2 move_param;
 
         public bool satisfied { get => this.state == GhostState.Satisfied; }
         public bool guiding_task { get => this.state == GhostState.Following || this.state == GhostState.Angry; }
-        public GhostState state;
+        private GhostState state;
+        private bool has_become_primary;
 
         public enum GhostState {
             Waiting,
@@ -94,12 +95,25 @@ namespace Task.Ghost {
             this.progress_subdue_amount = this.angry_at / progress_before_subdued;
             this.angry_anger_rate = this.progress_subdue_amount / (60 * this.minutes_before_angrier);
             this.anger_level = 0;
+            this.has_become_primary = false;
         }
 
         void Start() {
             GhostManager.register(this);
             GhostManager.Instance.player.AddFlagChangeHandler(this);
             this.state = GhostState.Waiting;
+            if (this.ghost_info != null) {
+                var flags = GhostManager.Instance.player.flags;
+                if (flags[$"satisfied:{this.ghost_info.name}"]) {
+                    this.state = GhostState.Satisfied;
+                }
+                if (flags[$"was_primary:{this.ghost_info.name}"]) {
+                    this.has_become_primary = true;
+                }
+                if (flags[$"primary:{this.ghost_info.name}"]) {
+                    GhostManager.Instance.try_take_primary(this);
+                }
+            }
             this.home_location = this.transform.position;
         }
 
@@ -267,6 +281,9 @@ namespace Task.Ghost {
         private void satisfy() {
             this.state = GhostState.Satisfied;
             GhostManager.Instance.satify_ghost(this);
+            if (this.ghost_info != null) {
+                GhostManager.Instance.player.flags[$"satisfied:{this.ghost_info.name}"] = true;
+            }
             GhostManager.Instance.player.remove_follow();
         }
 
@@ -280,6 +297,14 @@ namespace Task.Ghost {
             }
             this.state = GhostState.Following;
             anger_level = time;
+            if (this.ghost_info != null) {
+                GhostManager.Instance.player.flags[$"was_primary:{this.ghost_info.name}"] = true;
+                GhostManager.Instance.player.flags[$"primary:{this.ghost_info.name}"] = true;
+            }
+            if (!this.has_become_primary) {
+                GhostManager.Instance.player.QueueInteraction(new FollowCall(this));
+            }
+            this.has_become_primary = true;
             
             if (!try_enter_goals_completed()) {
                 recalculate_tracking_items();
@@ -294,6 +319,9 @@ namespace Task.Ghost {
         public void release_primary() {
             if (this.state == GhostState.GoalsCompleted) {
                 GhostManager.Instance.player.remove_follow();
+            }
+            if (this.ghost_info != null) {
+                GhostManager.Instance.player.flags[$"primary:{this.ghost_info.name}"] = false;
             }
             if (!this.satisfied)
                 this.state = GhostState.Waiting;
@@ -413,6 +441,19 @@ namespace Task.Ghost {
                 }
             }
             yield break;
+        }
+
+        private class FollowCall : Interactable {
+            private Ghost ghost;
+            public FollowCall(Ghost g) {
+                ghost = g;
+            }
+            public IEnumerable<bool> run_interaction(Inventory inventory, FlagSet flags, UIController controller) {
+                var entry = ghost.GetEntryPoint("follow");
+                if (entry == null) return null;
+                return ghost.run_graph_interaction(entry, inventory, flags, controller);
+            }
+
         }
 
         #endregion

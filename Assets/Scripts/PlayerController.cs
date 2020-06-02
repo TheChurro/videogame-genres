@@ -219,8 +219,16 @@ public class PlayerController : MonoBehaviour
     }
 
     private List<Interactable> queue;
-    void QueueInteraction(Interactable interactable) {
-        queue.Add(interactable);
+    public void QueueInteraction(Interactable interactable) {
+        if (interactable == null) return;
+        if (current_interaction == null) {
+            var enumerable = interactable.run_interaction(inventory, flags, UIController);
+            if (enumerable != null) {
+                current_interaction = enumerable.GetEnumerator();
+            }
+        } else {
+            queue.Add(interactable);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D collider) {

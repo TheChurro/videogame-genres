@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0fd988b83b0ab4b658fd9a388fac6ea1, type: 3}
-  m_Name: Cherry
+  m_Name: Scallions
   m_EditorClassIdentifier: 
-  description: 
-  image: {fileID: 2800000, guid: 323e399b4c2cd4e3ca72a3f362fced7e, type: 3}
+  image: {fileID: 2800000, guid: 92928f52360a74bd29db8272f686b61b, type: 3}
+  description: They grow wild around here!
   effect: 0

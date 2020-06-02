@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 158d90226cd10414c95c5f9106975728, type: 3}
-  m_Name: Larry
+  m_Name: Ancestor
   m_EditorClassIdentifier: 
   portrait: {fileID: 0}
   color: {r: 1, g: 0.8503309, b: 0.74509805, a: 1}
   flag_requirements:
-  - learned:Fruit Bowl
+  - learned:Braised Prawns
+  - training:cooking
   item_requirement: {fileID: 11400000, guid: 9c46e7bbac5794e01b083fc8093d8b30, type: 2}
