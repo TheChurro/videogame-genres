@@ -1,0 +1,367 @@
+fileFormatVersion: 2
+guid: 26249950d3a854600be75447ca6da4f7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8458178137671857983
+    second: Place Setting Top
+  - first:
+      213: 5933355373824550930
+    second: Prawn
+  - first:
+      213: 8547127495814848673
+    second: Scallion
+  - first:
+      213: -1940187754585404360
+    second: Odds and Ends_3
+  - first:
+      213: 7679878222955558188
+    second: Odds and Ends_4
+  - first:
+      213: -2959036230493358492
+    second: Odds and Ends_5
+  - first:
+      213: -2091384657803291721
+    second: Odds and Ends_6
+  - first:
+      213: 4932798720195294542
+    second: Odds and Ends_7
+  - first:
+      213: -1140913793065496706
+    second: Odds and Ends_8
+  - first:
+      213: -1840539528241903030
+    second: Odds and Ends_9
+  - first:
+      213: -3246000681704728915
+    second: Odds and Ends_10
+  - first:
+      213: 4215373152349913294
+    second: Odds and Ends_11
+  - first:
+      213: 4504969941884592516
+    second: Odds and Ends_12
+  - first:
+      213: 9161445089670847659
+    second: Place Setting Bottom
+  - first:
+      213: 7193590821763637209
+    second: Odds and Ends_14
+  - first:
+      213: -7384412386171098777
+    second: Odds and Ends_15
+  - first:
+      213: 3995597229553741616
+    second: Odds and Ends_16
+  - first:
+      213: 8261041875889737632
+    second: Odds and Ends_17
+  - first:
+      213: -7794055917134214437
+    second: Table
+  - first:
+      213: -6677142917315142438
+    second: Chair
+  - first:
+      213: -2905301652788128064
+    second: Water Puddle
+  - first:
+      213: -7676434219895783377
+    second: Prawn
+  - first:
+      213: -297676276685106700
+    second: Scallion
+  - first:
+      213: -2997863683093330729
+    second: Place Setting Top
+  externalObjects: {}
+  serializedVersion: 10
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: -1
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 256
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Place Setting Top
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 690
+        width: 216
+        height: 75
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c808111cc38e9a80800000000000000
+      internalID: -8458178137671857983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Prawn
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 622
+        width: 89
+        height: 114
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 218a7f6b643875250800000000000000
+      internalID: 5933355373824550930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallion
+      rect:
+        serializedVersion: 2
+        x: 598
+        y: 611
+        width: 114
+        height: 155
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a0a40e3c2f7d9670800000000000000
+      internalID: 8547127495814848673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Place Setting Bottom
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 590
+        width: 217
+        height: 75
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bacd31705cdf32f70800000000000000
+      internalID: 9161445089670847659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Table
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 55
+        width: 845
+        height: 535
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bda0fa32073f5d390800000000000000
+      internalID: -7794055917134214437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chair
+      rect:
+        serializedVersion: 2
+        x: 1010
+        y: 17
+        width: 225
+        height: 397
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: adc5aeac4e50653a0800000000000000
+      internalID: -6677142917315142438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Water Puddle
+      rect:
+        serializedVersion: 2
+        x: 778
+        y: 641
+        width: 171
+        height: 79
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c6553c2a8b4ea7d0800000000000000
+      internalID: -2905301652788128064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wild Scallion
+      rect:
+        serializedVersion: 2
+        x: 1015
+        y: 509
+        width: 192
+        height: 211
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f20857d9fb3d77590800000000000000
+      internalID: -7676434219895783377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
